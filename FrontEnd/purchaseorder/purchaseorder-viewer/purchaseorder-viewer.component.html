@@ -1,0 +1,75 @@
+<mat-card>
+    <div style="display:block;margin-left:auto;margin-right:auto;width:30%;">
+        <img src="../../assets/logo (2).jpg" width="100" height="100" />
+    </div>
+    <mat-card-header layout="row">
+        <mat-card-title>
+            <span>{{ msg }}</span>
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <form [formGroup]='viewerForm' novalidate>
+            <div layout="row">
+                <mat-form-field flex>
+                    <mat-select placeholder="Choose Vendor" formControlName="vendorid">
+                        <mat-option *ngFor="let vendor of vendors$ | async" [value]="vendor">
+                            {{ vendor.vendorname }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div *ngIf="pickedVendor" layout="row">
+                <mat-form-field flex>
+                    <mat-select placeholder="Choose Purchase Order" formControlName="poid" (change)="onPickPO()">
+                        <mat-option *ngFor="let po of vendorpos$ | async" [value]="po">
+                            {{ po.id }} - {{ po.podate}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div style="text-align:center;" *ngIf="pickedPO">
+                <h2>Purchase Order: {{ selectedPO.id }}</h2>
+                <p style="font-weight:bold;">Created on:</p>
+                <h3 style="font-weight:bold;">{{ selectedPO?.podate | date: 'short' : 'GMT-5' }}</h3>
+            </div>
+            <br />
+            <div *ngIf="pickedPO" class="row">
+                <table>
+                    <tr style="font-weight:bold;background-color:#eeeeee">
+                        <td style="text-align:center;width:30vw;padding-top:2vh;padding-bottom:2vh;">Name</td>
+                        <td style="text-align:center;width:20vw;padding-top:2vh;padding-bottom:2vh;">Qty</td>
+                        <td style="text-align:center;width:30vw;padding-top:2vh;padding-bottom:2vh;">Cost</td>
+                        <td style="text-align:center;width:30vw;padding-top:2vh;padding-bottom:2vh;">Extended</td>
+                    </tr>
+                    <tr *ngFor="let product of selectedProducts">
+                        <td style="padding-top:1vh;padding-bottom:1vh;">{{ product?.name }}</td>
+                        <td style="padding-top:1vh;padding-bottom:1vh;text-align:center">{{ product?.qoo }}</td>
+                        <td style="padding-top:1vh;padding-bottom:1vh;text-align:right;">{{ product?.costprice |
+                            currency:'USD':'symbol':'1.2-2' }}</td>
+                        <td style="padding-top:1vh;padding-bottom:1vh;text-align:right;">{{ product!.costprice *
+                            product!.qoo |
+                            currency:'USD':'symbol':'1.2-2' }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align:right;">Sub:</td>
+                        <td class="my-primary-text" style="text-align:right;">{{ sub |
+                            currency:'USD':'symbol':'1.2-2' }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align:right;">Tax:</td>
+                        <td class="my-primary-text" style="text-align:right;">{{ tax |
+                            currency:'USD':'symbol':'1.2-2' }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align:right;">Total:</td>
+                        <td class="my-primary-text" style="font-weight:600;text-align:right;">{{ total |
+                            currency:'USD':'symbol':'1.2-2' }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div style="text-align:center;" *ngIf="pickedPO">
+                <button mat-raised-button type="submit" (click)="viewPdf()">View PDF</button>
+            </div>
+        </form>
+    </mat-card-content>
+</mat-card>
